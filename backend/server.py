@@ -31,7 +31,7 @@ api_router = APIRouter(prefix="/api")
 
 
 # Define Models
-JWT_SECRET = os.environ.get("JWT_SECRET", "case-interviewer-local-secret")
+JWT_SECRET = os.environ["JWT_SECRET"]
 LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
 
 class AuthInput(BaseModel):
@@ -49,6 +49,9 @@ class TokenOut(BaseModel):
 
 class MessageInput(BaseModel):
     message: str
+
+class BookmarkInput(BaseModel):
+    case_id: str
 
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
@@ -75,7 +78,7 @@ FMS_CASES = [
 ]
 for index, (title, page, case_type) in enumerate(FMS_CASES, start=1):
     slug = "fms-" + "-".join(title.lower().replace("'", "").split())
-    CASES.append({"id": slug, "type": case_type, "slug": slug, "level": "Casebook", "xp": 100, "title": title, "prompt": f"You are working through the FMS Consulting CaseBook case: {title}. Please structure your approach and state your objective before asking for data.", "tags": ["FMS CaseBook", case_type], "source": "FMS Consulting CaseBook 2024-25", "source_pages": str(page), "source_url": "https://customer-assets-39nsmqrw.emergentagent.net/job_case-practice-hub/artifacts/773u4uo8_The%20FMS%20Consulting%20CaseBook%202024-25.pdf", "casebook": True})
+    CASES.append({"id": slug, "type": case_type, "slug": slug, "level": "Casebook", "difficulty": ["Easy", "Moderate", "Hard"][index % 3], "section": case_type, "xp": 100, "title": title, "prompt": f"You are working through the FMS Consulting CaseBook case: {title}. Please structure your approach and state your objective before asking for data.", "tags": ["FMS CaseBook", case_type], "source": "FMS Consulting CaseBook 2024-25", "source_pages": str(page), "source_url": "https://customer-assets-39nsmqrw.emergentagent.net/job_case-practice-hub/artifacts/773u4uo8_The%20FMS%20Consulting%20CaseBook%202024-25.pdf", "casebook": True})
 
 def current_user(authorization: Optional[str] = Header(default=None)):
     if not authorization or not authorization.startswith("Bearer "):
@@ -109,6 +112,25 @@ async def login(input: AuthInput):
 
 @api_router.get("/cases")
 async def get_cases(): return CASES
+
+@api_router.get("/bookmarks")
+async def get_bookmarks(authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    rows = await db.bookmarks.find({"user_id": user["sub"]}, {"_id": 0, "case_id": 1}).to_list(500)
+    return [row["case_id"] for row in rows]
+
+@api_router.post("/bookmarks")
+async def add_bookmark(input: BookmarkInput, authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    if not any(c["id"] == input.case_id for c in CASES): raise HTTPException(404, "Case not found")
+    await db.bookmarks.update_one({"user_id": user["sub"], "case_id": input.case_id}, {"$set": {"user_id": user["sub"], "case_id": input.case_id}}, upsert=True)
+    return {"case_id": input.case_id, "saved": True}
+
+@api_router.delete("/bookmarks/{case_id}")
+async def remove_bookmark(case_id: str, authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    await db.bookmarks.delete_one({"user_id": user["sub"], "case_id": case_id})
+    return {"case_id": case_id, "saved": False}
 
 @api_router.get("/progress")
 async def progress(authorization: Optional[str] = Header(default=None)):

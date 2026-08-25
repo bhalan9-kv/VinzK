@@ -31,6 +31,8 @@ Build a professional AI case interviewer for one case session at a time. It must
 - 2026-08-25: Progress dashboard with completed sessions and earned XP.
 - 2026-08-25: Responsive mobile layout and friendly API error states.
 - 2026-08-25: Imported the permitted FMS Consulting CaseBook 2024-25 practice catalog from pages 88–272, with searchable titles, categories, and source page references.
+- 2026-08-25: Added difficulty and section filters, protected personal casebook bookmarks, and responsive filter controls.
+- 2026-08-25: Hardened authentication by requiring a configured strong JWT signing secret.
 
 ## Prioritized backlog
 ### P0
