@@ -1,0 +1,54 @@
+{
+  "project_name": "Case Interviewer AI - The Anti-AI Designer Edition",
+  "archetype": "Swiss & High-Contrast Editorial Elite (Archetype 4 + Luxury Touch)",
+  "color_palette": {
+    "primary": "#0B132B",
+    "accent_signal": "#E63946",
+    "gold_accent": "#D4AF37",
+    "surface_dark": "#0F172A",
+    "surface_card": "#1E293B",
+    "text_main": "#F8FAFC",
+    "text_muted": "#94A3B8",
+    "border_subtle": "rgba(255, 255, 255, 0.08)"
+  },
+  "typography": {
+    "headings": "Playfair Display, serif",
+    "body": "JetBrains Mono for metrics / Inter for body",
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "body": "text-base leading-relaxed"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-slate-950/80 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+    "tracing_beam": "animated gradient border glow for top tier case cards",
+    "noise_texture": "subtle SVG grain overlay for editorial richness"
+  },
+  "components": [
+    "Navbar with live XP badge and quick-switch to practice, library, analytics",
+    "Marketing Landing Page with bold typography, interactive case preview, and live trust metrics",
+    "Authentication (Simple Email/Password with persistent state)",
+    "Six-Type Case Library (Profitability, Go-To-Market, Market Entry, Due Diligence, Unconventional, Guesstimates)",
+    "Live AI Interviewer Chatroom with Socratic neutral persona, structured gating, relevance classifier badge, data reveal card, and XP reward/penalty ticker",
+    "Post-Interview Scorecard with structured breakdown (Structuring, Data Efficiency, Math Accuracy, Synthesis, Creativity), XP awarded, and 3-5 sentence feedback",
+    "Persistent Progress Tracking & Case History Dashboard"
+  ],
+  "image_urls": [
+    {
+      "category": "executive_consulting",
+      "url": "https://images.pexels.com/photos/7433898/pexels-photo-7433898.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Senior leader presenting growth charts in a business meeting"
+    },
+    {
+      "category": "boardroom",
+      "url": "https://images.pexels.com/photos/7433844/pexels-photo-7433844.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Professionals engaged in strategy discussion in modern boardroom"
+    }
+  ],
+  "accessibility": {
+    "contrast_ratio": "Exceeds APCA standards for dark mode UI",
+    "aria_labels": "Included on all interactive buttons and modal triggers",
+    "data_testids": "Strictly implemented on all buttons, forms, chat inputs, and scorecards"
+  }
+}

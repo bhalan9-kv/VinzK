@@ -1,0 +1,196 @@
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
+from dotenv import load_dotenv
+from starlette.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
+import logging
+from pathlib import Path
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional
+import uuid
+from datetime import datetime, timezone
+import bcrypt
+import jwt
+import json
+from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
+
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+# MongoDB connection
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(mongo_url)
+db = client[os.environ['DB_NAME']]
+
+# Create the main app without a prefix
+app = FastAPI()
+
+# Create a router with the /api prefix
+api_router = APIRouter(prefix="/api")
+
+
+# Define Models
+JWT_SECRET = os.environ.get("JWT_SECRET", "case-interviewer-local-secret")
+LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+
+class AuthInput(BaseModel):
+    email: str
+    password: str
+
+class UserOut(BaseModel):
+    id: str
+    email: str
+    xp: int = 0
+
+class TokenOut(BaseModel):
+    token: str
+    user: UserOut
+
+class MessageInput(BaseModel):
+    message: str
+
+class StatusCheck(BaseModel):
+    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    client_name: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class StatusCheckCreate(BaseModel):
+    client_name: str
+
+# Add your routes to the router instead of directly to app
+CASES = [
+    {"id":"profitability-01","type":"Profitability","slug":"profitability","level":"Core","xp":120,"title":"The margin squeeze","prompt":"Your client is a regional coffee chain. Over the last 12 months, profits have fallen by 20% despite revenue growing by 8%. The CEO wants to understand why and what to do next.","tags":["Profit tree","Revenue","Costs"]},
+    {"id":"gtm-01","type":"Go-to-market","slug":"go-to-market","level":"Core","xp":140,"title":"A new audience","prompt":"A premium skincare company is considering launching a lower-priced line for college students. Should it enter this segment, and how should it go to market?","tags":["Segments","Channels","Positioning"]},
+    {"id":"entry-01","type":"Market entry","slug":"market-entry","level":"Advanced","xp":160,"title":"The next country","prompt":"Your client is a European logistics platform considering entry into Brazil. Should it enter within the next two years?","tags":["Attractiveness","Right to win","Entry mode"]},
+    {"id":"ma-01","type":"Due diligence","slug":"due-diligence","level":"Advanced","xp":180,"title":"The strategic buy","prompt":"A global industrials company is considering acquiring a fast-growing sensor manufacturer. Assess whether the acquisition is attractive and what risks matter most.","tags":["Valuation","Synergies","Integration"]},
+    {"id":"unconventional-01","type":"Unconventional","slug":"unconventional","level":"Stretch","xp":180,"title":"The silent airport","prompt":"An airport authority says passengers are spending less time and money inside the terminal. Diagnose the situation and recommend how to reverse the trend.","tags":["Ambiguity","Creativity","Synthesis"]},
+    {"id":"guesstimate-01","type":"Guesstimate","slug":"guesstimate","level":"Core","xp":100,"title":"How many rides?","prompt":"Estimate the annual number of rides taken by taxis in New York City. State your assumptions clearly and build your estimate from the bottom up.","tags":["Assumptions","Bottom-up","Math"]},
+]
+
+def current_user(authorization: Optional[str] = Header(default=None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(401, "Please sign in to continue")
+    try:
+        return jwt.decode(authorization.split(" ", 1)[1], JWT_SECRET, algorithms=["HS256"])
+    except Exception:
+        raise HTTPException(401, "Your session has expired")
+
+def make_token(user):
+    return jwt.encode({"sub": user["id"], "email": user["email"]}, JWT_SECRET, algorithm="HS256")
+
+@api_router.get("/")
+async def root():
+    return {"message": "Case Interviewer API"}
+
+@api_router.post("/auth/register", response_model=TokenOut)
+async def register(input: AuthInput):
+    email = input.email.lower().strip()
+    if len(input.password) < 8: raise HTTPException(400, "Password must be at least 8 characters")
+    if await db.users.find_one({"email": email}, {"_id": 0}): raise HTTPException(409, "An account already exists for this email")
+    user = {"id": str(uuid.uuid4()), "email": email, "password": bcrypt.hashpw(input.password.encode(), bcrypt.gensalt()).decode(), "xp": 0, "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.users.insert_one(user)
+    return {"token": make_token(user), "user": {"id": user["id"], "email": email, "xp": 0}}
+
+@api_router.post("/auth/login", response_model=TokenOut)
+async def login(input: AuthInput):
+    user = await db.users.find_one({"email": input.email.lower().strip()}, {"_id": 0})
+    if not user or not bcrypt.checkpw(input.password.encode(), user["password"].encode()): raise HTTPException(401, "Email or password is incorrect")
+    return {"token": make_token(user), "user": {"id": user["id"], "email": user["email"], "xp": user.get("xp", 0)}}
+
+@api_router.get("/cases")
+async def get_cases(): return CASES
+
+@api_router.get("/progress")
+async def progress(authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    rows = await db.sessions.find({"user_id": user["sub"], "completed": True}, {"_id": 0}).to_list(100)
+    total_xp = sum(r.get("xp_awarded", 0) for r in rows)
+    return {"completed": len(rows), "xp": total_xp, "sessions": rows}
+
+def case_prompt(case):
+    return f"""You are a strict, neutral, Socratic professional case interviewer. Run exactly one {case['slug']} case. Open by giving this case prompt verbatim and nothing else: {case['prompt']}\n\nClassify every candidate message. They must provide structure before data. For an answer request say exactly: I can't solve it for you — what's your next step? For irrelevant requests say exactly: The above question is not relevant for the case. For a relevant request, reveal exactly one concise data point, then ask their next step. Be under 80 words. Track relevance mentally. When the candidate gives a final recommendation, return a short close with a score JSON marker on a new line: SCORE_JSON={{\"structuring\":number,\"data_efficiency\":number,\"math_accuracy\":number,\"synthesis\":number,\"creativity\":number,\"xp\":number,\"feedback\":\"3-5 sentence feedback\"}}. Base the score on their actual performance; relevant questions gain value and irrelevant questions earn no XP or reduce it."""
+
+@api_router.post("/sessions")
+async def start_session(case_id: str, authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    case = next((c for c in CASES if c["id"] == case_id), None)
+    if not case: raise HTTPException(404, "Case not found")
+    sid = str(uuid.uuid4())
+    await db.sessions.insert_one({"id": sid, "user_id": user["sub"], "case_id": case_id, "case_title": case["title"], "case_type": case["type"], "messages": [], "completed": False, "xp_awarded": 0, "created_at": datetime.now(timezone.utc).isoformat()})
+    return {"session_id": sid, "case": case}
+
+@api_router.post("/sessions/{session_id}/message")
+async def message(session_id: str, input: MessageInput, authorization: Optional[str] = Header(default=None)):
+    user = current_user(authorization)
+    session = await db.sessions.find_one({"id": session_id, "user_id": user["sub"]}, {"_id": 0})
+    if not session: raise HTTPException(404, "Session not found")
+    case = next(c for c in CASES if c["id"] == session["case_id"])
+    history = session.get("messages", [])
+    transcript = "\n".join(f"{m['role']}: {m['content']}" for m in history[-12:])
+    prompt = case_prompt(case) + "\nTRANSCRIPT:\n" + transcript + "\nCANDIDATE: " + input.message
+    if not LLM_KEY: raise HTTPException(503, "Interviewer is not configured")
+    chat = LlmChat(api_key=LLM_KEY, session_id=session_id, system_message=case_prompt(case)).with_model("openai", "gpt-5.4-mini")
+    chunks = []
+    async for event in chat.stream_message(UserMessage(text=prompt)):
+        if isinstance(event, TextDelta): chunks.append(event.content)
+        elif isinstance(event, StreamDone): break
+    reply = "".join(chunks).strip()
+    score = None
+    if "SCORE_JSON=" in reply:
+        try: score = json.loads(reply.split("SCORE_JSON=", 1)[1].strip().split("\n", 1)[0])
+        except Exception: pass
+    history += [{"role":"user","content":input.message},{"role":"assistant","content":reply}]
+    update = {"messages": history}
+    if score: update.update({"completed": True, "xp_awarded": score.get("xp", 0), "score": score})
+    await db.sessions.update_one({"id": session_id}, {"$set": update})
+    if score: await db.users.update_one({"id": user["sub"]}, {"$inc": {"xp": score.get("xp", 0)}})
+    return {"reply": reply, "score": score}
+
+@api_router.post("/status", response_model=StatusCheck)
+async def create_status_check(input: StatusCheckCreate):
+    status_dict = input.model_dump()
+    status_obj = StatusCheck(**status_dict)
+    
+    # Convert to dict and serialize datetime to ISO string for MongoDB
+    doc = status_obj.model_dump()
+    doc['timestamp'] = doc['timestamp'].isoformat()
+    
+    _ = await db.status_checks.insert_one(doc)
+    return status_obj
+
+@api_router.get("/status", response_model=List[StatusCheck])
+async def get_status_checks():
+    # Exclude MongoDB's _id field from the query results
+    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for check in status_checks:
+        if isinstance(check['timestamp'], str):
+            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    
+    return status_checks
+
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
