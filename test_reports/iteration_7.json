@@ -1,0 +1,35 @@
+{
+  "summary": "Iteration 7 targeted re-test of the 4 user-reported bugs + 3 iteration-6 defects. Backend: /app/backend/tests/backend_test.py 17/17 pass (auth, catalog 101 cases, bookmarks, sessions CRUD, progress, ownership guards). Frontend (public preview URL): (1) 'Session expired' bug FIXED — Start case works immediately after register/login AND after a fresh reload with a valid token (redirects to /session/{id}, zero error elements); (2) stale/invalid JWT now triggers the friendly re-auth flow — auth modal opens with `auth-banner` 'Your session has ended. Please sign in again to continue.' and localStorage token/user are cleared (verified nav reverts to Sign in); (3) 'The method' nav link removed — nav shows only ['Case library','Your progress']; (4) Progress redesign verified: level-card with ROOKIE badge, 36 XP (renders '36' + CSS ::after ' XP', no '0 XP XP' duplication), progress bar, '264 XP to Analyst', streak-count '1 DAY' with 7 last-day dots (1 active), 4-tile stats row, avg-panel (5 dims) and type-panel present with sessions and correctly hidden for a 0-session user where the 'Browse cases' CTA shows instead; History tab expandable card with 5 animated bars + feedback + View transcript. (5) Session race FIXED — message sent immediately after mount is retained (1 user + 1 assistant bubble, no wipe). (6) Mobile nav FIXED — nav-burger visible at 390px, hidden at 1440px, drawer reveals library/progress + mobile Sign in CTA, drawer link navigates, 0px horizontal overflow. Button audit passed: brand-home, nav library/progress, nav-login/nav-logout, nav-avatar->/progress, hero-start-button->/library, hero-method-link->#method, cta-library-button->/library, library search ('margin'=1), difficulty (Hard=35) + section (Hard+Guesstimate=11) filters, All/Bookmarked tabs, bookmark star add/remove with empty state + empty-saved-browse, session chat input+send, scorecard 'View history'->/progress and 'Next case'->/library, progress tabs + see-all-history + recent-row expanding the matching history card. Full E2E: fresh user registered, case started, 3 LLM turns, scorecard generated (+36 XP, 5 bars, 630-char feedback), XP and session reflected on Progress.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/sessions, GET /api/progress", "issue": "Carried over from iteration 6 (not re-verified this run): full session documents incl. user_id and complete transcripts returned with no pagination/projection."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Progress > Summary stats row", "issues": ["STRONGEST TYPE tile value baseline sits ~17px lower than the other three tiles because it uses a 22px font (.stat-lg) vs 42px; visually the four values are not on a shared baseline. Cosmetic only."]},
+      {"screen": "Progress > level card (0-session user)", "issues": ["Streak block renders '0 DAYS' with no 7-day dots (dots array is empty when sessions=[]), leaving asymmetric whitespace vs the populated state. Consider rendering 7 inactive dots for new users."]},
+      {"screen": "Library with stale token", "issues": ["On page load with an invalid token the bookmarks fetch 401s and the auth modal auto-opens before any user action, so the page behind it is not interactable until dismissed. Behaviour is friendly/intentional but worth confirming it is the desired UX."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/backend/tests/conftest.py"],
+  "action_items": [
+    "Optional cosmetic: align the STRONGEST TYPE tile value baseline with the other three stat tiles.",
+    "Optional: render 7 inactive streak dots for users with 0 sessions."
+  ],
+  "critical_code_review_comments": [
+    "Session.jsx hydratedRef guard is correct and resolves the iteration-6 transcript race.",
+    "apiClient 401 interceptor + case:auth-lost event is a clean fix for the 'session expired' bug; clearSession runs before the event so the modal always sees a clean state."
+  ],
+  "updated_files": ["/app/test_reports/iteration_7.json"],
+  "success_rate": {"backend": "100% (17/17 backend_test.py)", "frontend": "100% of tested flows (only 3 cosmetic nits)"},
+  "seed_data_creation": "Registered qa.rev1787669983@example.com / PracticeRoom2026 (1 completed Profitability session, 36 XP, plus one unfinished Market entry session) and qa.empty1787670194@example.com / PracticeRoom2026 (0 sessions, for empty-state checks).",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "qa.rev1787669983@example.com / PracticeRoom2026 (36 XP, 1 scored session); qa.empty1787670194@example.com / PracticeRoom2026 (empty state)",
+  "context_for_next_testing_agent": "All 4 user-reported bugs and all 3 iteration-6 defects are verified fixed. LLM interviewer flow works end to end (scorecard in ~3 turns after a final recommendation). Not re-run this iteration: test_interviewer_llm.py and test_behavior_probe.py (the Guesstimate grounding probe was flaky by model behaviour in iteration 6 and remains unverified).",
+  "rca_of_the_issue": "Original 'session expired' came from an unhandled 401 path; the axios 401 interceptor now clears the stale session and dispatches case:auth-lost which App.js turns into an auth modal with a banner. Verified both the valid-token happy path and the invalid-token re-auth path."
+}

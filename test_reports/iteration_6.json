@@ -1,0 +1,59 @@
+{
+  "summary": "Full-stack review of Case Interviewer AI iteration 6. Backend: 22 pytest cases across auth, catalog (101 cases), bookmarks, new GET /api/sessions + /api/sessions/{id}, progress, ownership/auth guards and real GPT-5.4-mini interviewer flows (multi-turn persistence, SCORE_JSON parsing, XP award) — all pass. Frontend: landing + CTA, register/login (JWT in localStorage 'case_token', persists on refresh), library 101 cases with search/difficulty/section filters, bookmark toggle + All/Bookmarked tabs + empty states + reload persistence, live session multi-turn chat, Progress Summary/History tabs, expandable history scorecard (5 bars + feedback), View transcript replay with scorecard and disabled input — all working. Two defects found: a Session.jsx mount-fetch race that erases the user's first message from the transcript, and a flaky Guesstimate grounding-fact classification (~60% failure). Plus a Progress 'STREAK' stat rendering defect and no mobile nav.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/sessions/{id}/message (Guesstimate case)", "issue": "Grounding-fact rule is unreliable: 'what is the population of NYC' returns 'The above question is not relevant for the case.' in ~60% of runs (3 of 5 attempts) instead of revealing the grounding data point; conversely 'give me the number of taxis' sometimes returns 'I can't solve it for you — what's your next step?' instead of the exact irrelevance line. Prompt needs an explicit allow-list of grounding facts (population, GDP, households) and a tighter classification rule."},
+      {"endpoint": "POST /api/sessions/{id}/message (turn 1)", "issue": "By design the interviewer replies to the FIRST candidate message with the case prompt verbatim, so a turn-1 'give me the answer' is not refused. Also the candidate never sees the case prompt until they send something. Consider seeding the case prompt as the first assistant message at session creation."},
+      {"endpoint": "GET /api/sessions", "issue": "Returns raw session docs including user_id and full message arrays (200 docs, no pagination/projection). Consider trimming payload."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Session.jsx", "issue": "Race condition: the mount GET /api/sessions/{id} resolves after an early send and overwrites local state with the server snapshot, so the user's just-sent message disappears from the transcript (reproduced: sent immediately after page load -> only the assistant bubble rendered; backend had both messages; a refresh restored them). Guard the fetch (ignore stale response / merge instead of replace, or skip setMessages when local messages exist).", "selector": "[data-testid^=\"chat-message-\"]", "priority": "HIGH"},
+      {"component": "Progress.jsx stats", "issue": "STREAK card renders '1d' broken — the digit renders tiny while the 'd' unit renders at 46px, and STREAK/STRONGEST values sit on a lower baseline than TOTAL XP / CASES COMPLETED because their labels wrap to two lines with the inline icon.", "selector": "[data-testid=\"progress-stats\"]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Nav (mobile 390px)", "issues": ["`.nav-links { display:none }` under the mobile breakpoint with no hamburger/drawer, so mobile users cannot reach Case library / Your progress / The method from the header."]},
+      {"screen": "Progress > Summary", "issues": ["Streak/strongest tiles misaligned vs the first two tiles (see ui_bugs)."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/conftest.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_interviewer_llm.py",
+    "/app/backend/tests/test_behavior_probe.py",
+    "/app/backend/tests/seed_ui_user.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix Session.jsx mount-fetch race so an early-sent message is not wiped from the transcript.",
+    "Harden the Guesstimate prompt: explicit grounding-fact allow-list + strict irrelevance wording (currently ~60% flaky).",
+    "Fix the STREAK stat rendering (unit letter dominating the value) and baseline misalignment in Progress stats.",
+    "Add a mobile nav (hamburger/drawer) — nav links are hidden below the breakpoint with no replacement.",
+    "Optional: seed the case prompt as the first assistant message at session start so candidates see the case before typing."
+  ],
+  "critical_code_review_comments": [
+    "Session.jsx useEffect calls setMessages(r.data.messages || []) unconditionally on mount — no stale-response guard; this is the root cause of the lost-message bug.",
+    "GET /api/sessions and /api/progress return the whole session document (incl. user_id, full transcript) with a 200-doc cap and no pagination.",
+    "start_session takes case_id as a query param instead of a Pydantic body — inconsistent with the other POST endpoints (works, but harder to validate/extend).",
+    "server.py holds the entire 101-case catalog + prompt templates inline (295 lines but data-heavy); moving CASES/CATEGORY_GUIDANCE to a data module would keep routes readable."
+  ],
+  "updated_files": [
+    "/app/backend/tests/conftest.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_interviewer_llm.py",
+    "/app/backend/tests/test_behavior_probe.py",
+    "/app/backend/tests/seed_ui_user.py",
+    "/app/test_reports/iteration_6.json"
+  ],
+  "success_rate": {"backend": "100% (22/22 pytest; 1 flaky LLM-behavior probe at ~60% failure reported separately)", "frontend": "90% (all flows pass; 1 HIGH transcript race + 1 MEDIUM styling defect)"},
+  "seed_data_creation": "Created qa.reviewer.ui@example.com / PracticeRoom2026 with one scored Guesstimate session (45 XP) for History-tab testing via /app/backend/tests/seed_ui_user.py; plus throwaway TEST_* accounts from pytest and two qa.ui.* / qa.reg.* accounts from browser registration runs.",
+  "flaky_tests": ["test_behavior_probe.py::test_guesstimate_grounding_after_warmup — ~60% failure rate (LLM classification of grounding facts)"],
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "qa.reviewer.ui@example.com / PracticeRoom2026 (has 1 completed scored session for History tab)",
+  "context_for_next_testing_agent": "Backend suite now split: backend_test.py (CRUD/auth/guards, fast), test_interviewer_llm.py (real LLM turns + SCORE_JSON), test_behavior_probe.py (refusal + grounding probes; the grounding assert is flaky by model behavior). conftest.py reads REACT_APP_BACKEND_URL from /app/frontend/.env so plain `pytest` works. Verified in UI: landing CTA -> /library, register/login redirect to /library and token key is 'case_token', 101 cases, filters (Hard=35, Hard+Guesstimate=11, search 'margin'=1), bookmark add/persist-on-reload/remove with empty state, sign-in gates on Bookmarked tab and /progress, Progress Summary (XP 45, completed 1) + History expand (5 bars, 525-char feedback) + View transcript replay (5 bubbles, scorecard, input+send disabled), mobile 390px zero horizontal overflow. Not retested: scorecard generated live through the UI (was seeded via API).",
+  "rca_of_the_issue": "Lost transcript message: Session.jsx runs client().get(`/sessions/${id}`) on mount and calls setMessages(r.data.messages || []). When a user sends a message before that request resolves, the resolved (older) server snapshot replaces the optimistically appended user message; the subsequent assistant reply is appended to the truncated array, so the transcript renders only the assistant bubble until a refresh. Backend persistence is correct (verified via GET /api/sessions/{id} showing both messages). Guesstimate grounding failure: CATEGORY_GUIDANCE only says 'unless it is a grounding fact like country population', which the model does not consistently extend to city population, so it emits the irrelevance line; needs an explicit allow-list."
+}
