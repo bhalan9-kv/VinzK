@@ -30,6 +30,7 @@ Build a professional AI case interviewer for one case session at a time. It must
 - 2026-08-25: Scorecard UI with five score bars, feedback, XP, and progress link.
 - 2026-08-25: Progress dashboard with completed sessions and earned XP.
 - 2026-08-25: Responsive mobile layout and friendly API error states.
+- 2026-08-25: Imported the permitted FMS Consulting CaseBook 2024-25 practice catalog from pages 88–272, with searchable titles, categories, and source page references.
 
 ## Prioritized backlog
 ### P0
@@ -39,6 +40,7 @@ Build a professional AI case interviewer for one case session at a time. It must
 - Add a dedicated scorecard history detail page for each completed session.
 - Add configurable case difficulty and timed interview mode.
 - Add richer exhibit rendering for tables and chart descriptions.
+- Replace catalog prompts with the full verbatim prompt, exhibit, and hidden answer data for every imported case as the detailed extraction pass is completed.
 
 ### P2
 - Add streaks and weekly practice targets.
