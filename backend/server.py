@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import re
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
@@ -12,6 +13,7 @@ from datetime import datetime, timezone
 import bcrypt
 import jwt
 import json
+from pypdf import PdfReader
 from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
 
 
@@ -28,6 +30,7 @@ api_router = APIRouter(prefix="/api")
 
 JWT_SECRET = os.environ["JWT_SECRET"]
 LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+CASEBOOK_PDF = os.environ.get("CASEBOOK_PDF_PATH", "/tmp/fms_casebook.pdf")
 
 
 class AuthInput(BaseModel):
@@ -51,8 +54,8 @@ class BookmarkInput(BaseModel):
 
 
 CASES = [
-    {"id":"profitability-01","type":"Profitability","slug":"profitability","level":"Core","difficulty":"Moderate","xp":120,"title":"The margin squeeze","prompt":"Your client is a regional coffee chain. Over the last 12 months, profits have fallen by 20% despite revenue growing by 8%. The CEO wants to understand why and what to do next.","tags":["Profit tree","Revenue","Costs"]},
-    {"id":"gtm-01","type":"Go-to-market","slug":"go-to-market","level":"Core","difficulty":"Moderate","xp":140,"title":"A new audience","prompt":"A premium skincare company is considering launching a lower-priced line for college students. Should it enter this segment, and how should it go to market?","tags":["Segments","Channels","Positioning"]},
+    {"id":"profitability-01","type":"Profitability","slug":"profitability","level":"Core","difficulty":"Medium","xp":120,"title":"The margin squeeze","prompt":"Your client is a regional coffee chain. Over the last 12 months, profits have fallen by 20% despite revenue growing by 8%. The CEO wants to understand why and what to do next.","tags":["Profit tree","Revenue","Costs"]},
+    {"id":"gtm-01","type":"Go-to-market","slug":"go-to-market","level":"Core","difficulty":"Medium","xp":140,"title":"A new audience","prompt":"A premium skincare company is considering launching a lower-priced line for college students. Should it enter this segment, and how should it go to market?","tags":["Segments","Channels","Positioning"]},
     {"id":"entry-01","type":"Market entry","slug":"market-entry","level":"Advanced","difficulty":"Hard","xp":160,"title":"The next country","prompt":"Your client is a European logistics platform considering entry into Brazil. Should it enter within the next two years?","tags":["Attractiveness","Right to win","Entry mode"]},
     {"id":"ma-01","type":"Due diligence","slug":"due-diligence","level":"Advanced","difficulty":"Hard","xp":180,"title":"The strategic buy","prompt":"A global industrials company is considering acquiring a fast-growing sensor manufacturer. Assess whether the acquisition is attractive and what risks matter most.","tags":["Valuation","Synergies","Integration"]},
     {"id":"unconventional-01","type":"Unconventional","slug":"unconventional","level":"Stretch","difficulty":"Hard","xp":180,"title":"The silent airport","prompt":"An airport authority says passengers are spending less time and money inside the terminal. Diagnose the situation and recommend how to reverse the trend.","tags":["Ambiguity","Creativity","Synthesis"]},
@@ -64,20 +67,123 @@ FMS_CASES = [
     ("Orchard Farmer",132,"Profitability"),("Retail Chain",134,"Profitability"),("E-Commerce Company",136,"Profitability"),("Garbage Collecting Company",138,"Profitability"),("Biscuit Manufacturer",140,"Profitability"),("Automobile Company Sales",142,"Revenues"),("Automobile Dealership",144,"Revenues"),("Kids' TV Channel",146,"Revenues"),("Apparel Company",148,"Cost Reduction"),("Quick Service Restaurant",150,"Cost Reduction"),("Steel Manufacturer",152,"Profitability"),("Toy Manufacturer",154,"Profitability"),("Pharmaceutical Analysis",156,"Profitability"),("Power Plant",158,"Profitability"),("Airline Profitability",162,"Profitability"),("Shopping Mall in South Delhi",164,"Revenues"),("Food Manufacturer Case",166,"Cost Reduction"),("IT Services Client",168,"Cost Reduction"),("Steel Manufacturer Costs",170,"Cost Reduction"),("Women Apparel Chain",172,"Cost Reduction"),("2024 Olympics Rights",174,"Profitability"),("Home Insurance Entry",176,"Market Entry"),("Sports Bike",178,"Market Entry"),("Home Automation Player",180,"Market Entry"),("Gold Mine in Mongolia",182,"Market Entry"),("Skin Care Manufacturer",185,"Market Entry"),("Smart Phone Market",187,"Market Entry"),("South African PE Firm",189,"Market Entry"),("5G Launch in India",191,"Market Entry"),("Coffee Capsule",193,"Market Entry"),("Appliance Distribution Company",196,"Growth"),("Apparel Business Topline",199,"Growth"),("Book Publishing",201,"Growth"),("Pediatric Vaccine Manufacturer",203,"Growth"),("Truck Manufacturer",205,"Growth"),("Fashion Retail Store",207,"Growth"),("Golf Course",209,"Pricing"),("Paint Manufacturer",211,"Pricing"),("On Demand Truck Platform",214,"Pricing"),("Hepatitis-B Drug",216,"Pricing"),("Ride hailing Helicopter Cab Service",218,"Pricing"),("Logistics Efficiency",221,"Unconventional"),("Chatbot Development",223,"Unconventional"),("Manufacturing Efficiency",225,"Unconventional"),("Time Management",227,"Unconventional"),("CO2 Emissions",229,"Unconventional"),("Unborn Baby",232,"Unconventional"),("Launching a Green Airline",234,"Unconventional"),("Client Stuck in an Island",237,"Unconventional"),("Increase in Product Returns",239,"Unconventional"),("Footfall of Church",242,"Unconventional"),("Money Heist",244,"Unconventional"),("Increase in Road Accidents",246,"Unconventional"),("Swedish Government",249,"Unconventional"),("Light Bulb Company",251,"Customer Satisfaction"),("Bottling Plant",254,"Customer Satisfaction"),("Telecom Provider",256,"Customer Satisfaction"),("Airline Acquisition",258,"M&A"),("PE Cosmetic Chain",261,"M&A"),("Metro Investment in Dubai",263,"M&A"),("Coffee Shop",267,"Due Diligence"),("Fantasy Sports App",270,"Due Diligence"),
 ]
 
+def _load_casebook_pages():
+    """Load raw text from the FMS casebook PDF. Returns a list of page strings; empty list on failure."""
+    try:
+        reader = PdfReader(CASEBOOK_PDF)
+        pages = []
+        for p in reader.pages:
+            try:
+                pages.append(p.extract_text() or "")
+            except Exception:
+                pages.append("")
+        return pages
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"Casebook PDF not loaded: {e}")
+        return []
+
+
+CASEBOOK_PAGES = _load_casebook_pages()
+
+
+def _clean_pdf_text(text: str) -> str:
+    """Normalize whitespace and drop the recurring copyright header."""
+    text = re.sub(r"©\s*The Consulting Club, FMS Delhi 20\d{2}-\d{2}", "", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n\s*\n+", "\n\n", text)
+    return text.strip()
+
+
+PROMPT_PREFIXES = (
+    "your client", "the client", "our client", "a client",
+    "estimate", "estimatethe",
+    "a chain of", "a company", "a global", "a leading", "a large", "a major",
+    "a premium", "a fortune", "an e-commerce", "a retail",
+    "a private equity", "a pe firm", "a manufacturer", "a startup",
+)
+
+
+def _looks_like_prompt(line: str) -> bool:
+    s = line.strip()
+    if len(s) < 40 or len(s) > 500:
+        return False
+    low = s.lower()
+    if not any(low.startswith(p) for p in PROMPT_PREFIXES):
+        return False
+    if s.startswith(("•", "-", "*", "S.No", "Approach", "Recommendations", "Case Facts", "Assumptions")):
+        return False
+    if ":" in s[:20] and not low.startswith("estimate"):
+        return False
+    return True
+
+
+DIFFICULTY_RE = re.compile(r"[|\n]\s*(Easy|Medium|Moderate|Hard|Difficult)\s*(?:[|\n]|Bain|BCG|McKinsey|Deloitte|Accenture|EY|KPMG|PwC)", re.IGNORECASE)
+
+
+def _detect_difficulty(text: str) -> Optional[str]:
+    """Detect Easy/Medium/Hard from the case's first-page header (looks for a `| Easy |` style tag)."""
+    header = text[:600]
+    m = DIFFICULTY_RE.search(header)
+    if not m:
+        return None
+    raw = m.group(1).lower()
+    if raw in ("moderate", "medium"):
+        return "Medium"
+    if raw in ("hard", "difficult"):
+        return "Hard"
+    return "Easy"
+
+
+def _casebook_slice(page: int, span: int = 2) -> str:
+    """Extract cleaned text for a case starting at 0-indexed page `page`, spanning `span` pages."""
+    if not CASEBOOK_PAGES:
+        return ""
+    end = min(len(CASEBOOK_PAGES), page + span + 1)
+    joined = "\n\n".join(CASEBOOK_PAGES[page:end])
+    return _clean_pdf_text(joined)
+
+
+# Ordered page list to compute spans between consecutive cases
+_FMS_PAGES_SORTED = sorted({p for _, p, _ in FMS_CASES})
+
 for index, (title, page, case_type) in enumerate(FMS_CASES, start=1):
     slug = "fms-" + "-".join(title.lower().replace("'", "").split())
+    # Span = gap to next case, capped at 3 pages
+    next_page = next((p for p in _FMS_PAGES_SORTED if p > page), page + 3)
+    span = max(1, min(3, next_page - page - 1))
+    raw_text = _casebook_slice(page, span=span)
+    # Verbatim prompt must come from the case's FIRST page only (next pages may spill from other cases)
+    first_page_text = _clean_pdf_text(CASEBOOK_PAGES[page]) if 0 <= page < len(CASEBOOK_PAGES) else ""
+    difficulty = _detect_difficulty(raw_text)
+    if not difficulty:
+        # Sensible fallback: Guesstimates and Customer Satisfaction default to Easy; PE/Diligence/Unconventional to Hard; rest Medium.
+        if case_type in ("Guesstimate", "Customer Satisfaction"):
+            difficulty = "Easy"
+        elif case_type in ("Due Diligence", "M&A", "Unconventional"):
+            difficulty = "Hard"
+        else:
+            difficulty = "Medium"
+    # Prefer the prompt line printed in the casebook if we can find it
+    verbatim_prompt = None
+    if first_page_text:
+        for line in first_page_text.splitlines():
+            if _looks_like_prompt(line):
+                verbatim_prompt = line.strip()
+                break
+    fallback_prompt = f"You are working through the FMS Consulting CaseBook case: {title}. This is a {case_type.lower()} case from the casebook (page {page + 1}). Begin by stating how you'll structure your approach and what objective you want to answer before asking for data."
     CASES.append({
         "id": slug,
         "type": case_type,
         "slug": slug,
         "level": "Casebook",
-        "difficulty": ["Easy", "Moderate", "Hard"][index % 3],
-        "xp": 100,
+        "difficulty": difficulty,
+        "xp": {"Easy": 90, "Medium": 110, "Hard": 140}.get(difficulty, 100),
         "title": title,
-        "prompt": f"You are working through the FMS Consulting CaseBook case: {title}. The interviewer will lead this {case_type.lower()} case from the casebook (page {page}). Begin by stating how you'll structure your approach and what objective you want to answer before asking for data.",
-        "tags": ["FMS CaseBook", case_type],
+        "prompt": verbatim_prompt or fallback_prompt,
+        "tags": ["FMS CaseBook", case_type, difficulty],
         "source": "FMS Consulting CaseBook 2024-25",
-        "source_pages": str(page),
+        "source_pages": str(page + 1),
+        "casebook_text": raw_text,
     })
 
 
@@ -121,7 +227,8 @@ async def login(input: AuthInput):
 
 @api_router.get("/cases")
 async def get_cases():
-    return CASES
+    # Strip heavy casebook_text field before returning to the client
+    return [{k: v for k, v in c.items() if k != "casebook_text"} for c in CASES]
 
 
 @api_router.get("/bookmarks")
@@ -187,31 +294,90 @@ CATEGORY_GUIDANCE = {
 }
 
 
+DIFFICULTY_BEHAVIOR = {
+    "Easy": """DIFFICULTY: EASY. This candidate is early in their prep.
+- If they seem stuck for two turns (blank structure, repeated irrelevant asks, or asking you to solve it), offer ONE brief structural hint prefixed with "Hint:" (e.g. "Hint: have you split revenue into volume and price yet?"). Never reveal data as a hint. Never give more than one hint per stuck moment.
+- Be slightly more patient with vague phrasing (see FUZZY MATCHING below).
+- Grade slightly more generously: award XP for a decent structure even if the final math is imperfect.""",
+    "Medium": """DIFFICULTY: MEDIUM. This candidate has done a few reps.
+- Do not volunteer hints unless they explicitly ask for one. If they ask for a hint, give ONE brief structural nudge, never data.
+- Grade the way a first-round interviewer would.""",
+    "Hard": """DIFFICULTY: HARD. Treat this like a partner round.
+- Never volunteer hints. If they ask for a hint, decline: "I can't nudge you here — what's your next step?"
+- Grade strictly: expect an explicit objective, a MECE structure, a clean math walk, and a so-what synthesis.""",
+}
+
+FUZZY_MATCHING_RULE = """FUZZY MATCHING (very important):
+The candidate does not need to phrase asks perfectly. Two cases apply:
+
+CASE A — the ask is already CRISP (names both a metric AND a dimension/qualifier, in interviewer-style language). Examples of crisp asks:
+- "What is our revenue split by product line?"
+- "What are our labour costs?"
+- "How has our average price per cup changed year over year?"
+- "What is our market share versus competitors?"
+For CRISP asks: reveal ONE data point immediately, with NO coaching line, NO preamble.
+
+CASE B — the ask has the right INTENT but is colloquial, vague on metric OR dimension, or uses non-consulting language. Examples of fuzzy asks:
+- "how much do we spend on labour" (metric ok, but colloquial phrasing)
+- "market growth" (missing dimension)
+- "how big is this thing" (very vague)
+- "any info on competitors?"
+- "what are people paying"
+For FUZZY asks with clear intent: still reveal the data, but PREPEND exactly ONE coaching line in this shape, then a newline, then the data:
+"A sharper phrasing would be: '<crisper interviewer-style version>' — here's the data:"
+
+DO NOT use the coaching line on crisp asks. DO NOT use it more than once per reply. When in doubt whether an ask is crisp, DEFAULT to no coaching line.
+"""
+
+
+def _build_casebook_context(case) -> str:
+    txt = (case.get("casebook_text") or "").strip()
+    if not txt:
+        return ""
+    # Trim to ~3500 chars so we stay well within model context while keeping exhibits usable
+    snippet = txt[:3500]
+    return f"""
+CASEBOOK SOURCE MATERIAL (private, DO NOT paste verbatim to the candidate):
+The text below is the ground truth from the FMS Consulting CaseBook for this case — it may contain the verbatim prompt, notes, exhibits, and the expected framework/answer. Use it as the source of truth when deciding what data to reveal and how to score. Reveal one data point at a time only when asked. Never dump this block. Never confirm or reveal the model answer until the candidate finishes with a final recommendation (or explicitly gives up).
+===
+{snippet}
+===
+"""
+
+
 def case_prompt(case):
     category = case.get("type", "")
+    difficulty = case.get("difficulty", "Medium")
     guidance = CATEGORY_GUIDANCE.get(category, "Expect a structured, MECE approach appropriate to the prompt.")
-    return f"""You are a strict, neutral, Socratic professional case interviewer. Run exactly one case: {case['title']} (type: {category}). You never solve the case, never volunteer information they haven't asked for, and never confirm whether a direction is "right" until they explicitly ask for feedback or deliver a final recommendation.
+    diff_behavior = DIFFICULTY_BEHAVIOR.get(difficulty, DIFFICULTY_BEHAVIOR["Medium"])
+    casebook_ctx = _build_casebook_context(case)
+    return f"""You are a strict, neutral, Socratic professional case interviewer. Run exactly one case: {case['title']} (type: {category}, difficulty: {difficulty}). You never solve the case, never volunteer information they haven't asked for, and never confirm whether a direction is "right" until they explicitly ask for feedback or deliver a final recommendation.
 
 CASE PROMPT (deliver this verbatim as your very first message, and nothing else):
 {case['prompt']}
 
 CATEGORY BEHAVIOR: {guidance}
 
+{diff_behavior}
+
+{FUZZY_MATCHING_RULE}
+
+{casebook_ctx}
 RULES:
 - Structure before data. If the candidate asks for numbers before laying out a structure, give exactly one neutral nudge: "Before we dive into numbers — how are you thinking about structuring this problem?"
 - For every candidate message, classify it:
-  * Relevant hit → reveal ONE concise data point that would plausibly be in a real interviewer's data bank for this case. Do not editorialize. Do not hint at implications.
+  * Relevant hit (exact OR fuzzy per the rule above) → reveal ONE concise data point (from the CASEBOOK SOURCE MATERIAL when available, otherwise from a plausible interviewer bank). Do not editorialize. Do not hint at implications.
   * Irrelevant / out of scope → respond EXACTLY: "The above question is not relevant for the case."
-  * Ambiguous phrasing → ask ONE clarifying question first.
+  * Ambiguous phrasing (unclear even after fuzzy expansion) → ask ONE clarifying question first.
   * Direct ask for the answer / framework → reply EXACTLY: "I can't solve it for you — what's your next step?"
 - Never reveal two data points in one answer. Make them ask separately.
-- Never give hints as data — a hint may only be a structural nudge (e.g., "Have you considered the cost side yet?").
-- Keep every response under 80 words unless revealing a table or exhibit.
+- Never give hints as data — a hint may only be a structural nudge.
+- Keep every response under 90 words unless revealing a table or exhibit.
 
 WHEN THEY DELIVER A FINAL RECOMMENDATION:
 Close politely in one line, then on a new line output exactly:
 SCORE_JSON={{"structuring":<0-100>,"data_efficiency":<0-100>,"math_accuracy":<0-100>,"synthesis":<0-100>,"creativity":<0-100>,"xp":<0-{case.get('xp',120)}>,"feedback":"3-5 plain sentences: what they structured well, one relevant data point they never asked for, whether their number/recommendation matches the range, one concrete next-time suggestion"}}
-Base scores on their ACTUAL performance. Relevant asks raise data_efficiency; irrelevant asks lower it. A candidate who gathers data but never concludes must score low on synthesis regardless of data efficiency. Never award full XP unless the synthesis directly addresses the objective."""
+Base scores on their ACTUAL performance. Relevant asks (including fuzzy hits) raise data_efficiency; irrelevant asks lower it. A candidate who gathers data but never concludes must score low on synthesis regardless of data efficiency. Never award full XP unless the synthesis directly addresses the objective. Adjust generosity based on difficulty ({difficulty})."""
 
 
 @api_router.post("/sessions")
@@ -222,7 +388,7 @@ async def start_session(case_id: str, authorization: Optional[str] = Header(defa
         raise HTTPException(404, "Case not found")
     sid = str(uuid.uuid4())
     await db.sessions.insert_one({"id": sid, "user_id": user["sub"], "case_id": case_id, "case_title": case["title"], "case_type": case["type"], "messages": [], "completed": False, "xp_awarded": 0, "created_at": datetime.now(timezone.utc).isoformat()})
-    return {"session_id": sid, "case": case}
+    return {"session_id": sid, "case": {k: v for k, v in case.items() if k != "casebook_text"}}
 
 
 @api_router.post("/sessions/{session_id}/message")

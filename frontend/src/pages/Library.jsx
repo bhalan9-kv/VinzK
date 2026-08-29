@@ -86,7 +86,7 @@ export const Library = ({ onLogin }) => {
             <Filter size={12} className="filter-icon"/>
             <label>Difficulty
               <select data-testid="difficulty-filter" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
-                <option>All</option><option>Easy</option><option>Moderate</option><option>Hard</option><option>Core</option><option>Advanced</option><option>Stretch</option>
+                <option>All</option><option>Easy</option><option>Medium</option><option>Hard</option>
               </select>
               <ChevronDown size={13}/>
             </label>

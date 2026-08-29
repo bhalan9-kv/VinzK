@@ -1,0 +1,53 @@
+{
+  "summary": "Wave A testing (Casebook deep import + fuzzy/hint/difficulty prompt logic). Backend pytest: 38/41 pass (tests/backend_test.py 17/17 regression, tests/test_casebook.py 11/12, tests/test_casebook_fallback.py 2/2, tests/test_wave_a_behavior.py 5/7, tests/test_interviewer_llm.py 3/3). Verified: /api/cases returns exactly 101 (6 core + 95 casebook), every difficulty ∈ {Easy,Medium,Hard} (Easy 44 / Medium 40 / Hard 17), the string 'Moderate' appears nowhere in any public case field or in the /api/cases raw response (the PDF does print 'Moderate' and _detect_difficulty correctly normalises it to Medium), casebook_text is stripped from both /api/cases and POST /api/sessions, all 95 casebook cases carry numeric source_pages + source label, 34/95 have a verbatim casebook prompt, and the app still boots + builds all 101 cases with generic prompts when the PDF is missing (CASEBOOK_PDF_PATH pointed at a bogus path in a subprocess). Frontend (public preview URL): difficulty filter offers exactly All/Easy/Medium/Hard, header shows '101 CASES', no 'Moderate' anywhere in the DOM, filter counts 44/40/17, casebook card renders the verbatim prompt + p.133 page tag + Easy badge. Full UI E2E on fms-biscuit-manufacturer: fresh user -> Start case -> first interviewer message is the verbatim casebook line ('Your client is a biscuit manufacturer and wants to increase profitability.') -> fuzzy ask coached -> final recommendation -> scorecard with 5 dimensions + 605-char feedback that cited a real casebook fact (packaging-material cost) -> +29 XP written to /api/progress and shown on the Progress page. 3 reproducible defects found (details below).",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/sessions/{id}/message (FUZZY_MATCHING_RULE in case_prompt)", "issue": "The coaching line is prepended to ALREADY-CRISP asks — 4/4 false positives, including the exact spec example. 'What is our revenue split by product line?' returned \"A sharper phrasing would be: 'What is revenue by product line?' — here's the data: ...\"; also for 'What are our labour costs?' and 'How has our average price per cup changed year over year?'. Spec requires no coaching line when the phrasing is already crisp. Root cause: FUZZY_MATCHING_RULE flags the behaviour as 'very important' and gives only a one-line negative instruction with no definition of 'crisp' and no negative examples, so the model applies it to every data ask. Suggest adding explicit DO-NOT examples ('what is our revenue split by product line?' -> reveal with zero preamble) and a rule like 'only use the coaching line when the ask omits the metric or the dimension / uses colloquial wording'.", "priority": "HIGH"},
+      {"endpoint": "case builder — verbatim prompt heuristic", "issue": "fms-retail-chain falls back to the generic 'You are working through…' prompt even though page 135 prints 'A chain of retail stores recently increased the number of stores. However, with increase in the stores, the profitability has dropped.' The prefix whitelist has no 'a chain of' and the endswith('.'/'?') filter also rejects prompt lines that wrap without terminal punctuation (e.g. 'Estimatethe numberof umbrellassold in Mumbai in a year' on p.92, 'Your client is an e-commerce player, … You are to analyze the root cause' on p.137). Spec explicitly named Retail Chain as a grounded case.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "case builder — verbatim prompt heuristic", "issue": "fms-home-insurance-entry extracts the WRONG line: prompt = 'The client has trained on ground agents which sell insurance directly to people.' (a mid-transcript data fact), because the real 2-line prompt on p.177 has no terminal punctuation on line 1. Mis-extraction is worse than the fallback since it leaks a data point in the case brief."},
+      {"endpoint": "POST /api/sessions/{id}/message — Easy difficulty", "issue": "On an Easy case the structural 'Hint:' only appears on the 3rd stuck candidate turn (turn 1 is consumed delivering the verbatim prompt, turn 2 by the 'Before we dive into numbers…' structure nudge). Spec asks for the hint by the 2nd turn. A 4th stuck message ('help me please') then returned 'The above question is not relevant for the case.' — harsh/incorrect for an Easy stuck candidate."},
+      {"endpoint": "GET /api/sessions, GET /api/progress", "issue": "Carried over: full session docs incl. user_id and complete transcripts returned with no pagination/projection."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_casebook.py",
+    "/app/backend/tests/test_casebook_fallback.py",
+    "/app/backend/tests/test_wave_a_behavior.py",
+    "/app/backend/tests/test_wave_a_probe.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "HIGH: stop the 'A sharper phrasing would be:' coaching line from firing on crisp/canonical data asks — add negative examples + a definition of 'crisp' (metric + dimension named) to FUZZY_MATCHING_RULE.",
+    "HIGH: widen the verbatim-prompt heuristic — add 'a chain of' (and similar) prefixes and drop/relax the terminal-punctuation requirement (or join the first 1-2 wrapped lines) so fms-retail-chain, fms-e-commerce-company and the guesstimate pages with de-spaced text get their printed prompt.",
+    "MEDIUM: guard against mis-extraction (fms-home-insurance-entry picked a mid-transcript fact as the prompt) — prefer the FIRST qualifying line of the page and require it to appear before the first 'I would like to clarify' / dialogue marker.",
+    "MEDIUM: make the Easy hint reachable by the 2nd stuck turn (the structure-first nudge currently consumes the turn) and never answer a stuck Easy candidate with 'The above question is not relevant for the case.'"
+  ],
+  "critical_code_review_comments": [
+    "Difficulty normalisation (_detect_difficulty) is correct: the PDF really does contain '| Moderate |' headers and they map to Medium; nothing named 'Moderate' reaches any public field.",
+    "casebook_text is correctly stripped in both /api/cases and POST /api/sessions, but it is still stored in the in-memory CASES dicts — any future endpoint that echoes a case object will leak ~3.5KB of PDF text. Consider keeping the raw text in a separate CASEBOOK_TEXT[case_id] map instead of inside the case dict.",
+    "_load_casebook_pages failure path is safe (logs a warning, 101 cases still built, case_prompt omits the casebook block) — verified by subprocess import with a bogus CASEBOOK_PDF_PATH.",
+    "Casebook grounding demonstrably works: the scorecard feedback cited a real page fact (packaging-material cost increase) that was never revealed to the candidate."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_casebook.py",
+    "/app/backend/tests/test_casebook_fallback.py",
+    "/app/backend/tests/test_wave_a_behavior.py",
+    "/app/backend/tests/test_wave_a_probe.py",
+    "/app/test_reports/iteration_8.json"
+  ],
+  "success_rate": {"backend": "93% (38/41 pytest)", "frontend": "100% of tested UI flows (filter vocabulary, 101 count, casebook card, session E2E, scorecard, XP persistence)"},
+  "seed_data_creation": "Registered qa.wavea1787671550@example.com / PracticeRoom2026 (1 completed fms-biscuit-manufacturer session, 29 XP) plus throwaway TEST_* accounts from pytest fixtures.",
+  "should_call_test_agent_after_fix": true,
+  "should_main_agent_self_test": false,
+  "test_credentials": "qa.wavea1787671550@example.com / PracticeRoom2026 (29 XP, 1 scored casebook session)",
+  "context_for_next_testing_agent": "New test files: tests/test_casebook.py (fixtures: counts, Moderate-free, difficulty vocab, source_pages, 34 verbatim prompts, casebook_text stripped), tests/test_casebook_fallback.py (no-PDF boot path + Moderate normalisation via subprocess import), tests/test_wave_a_behavior.py (fuzzy/crisp/Easy-hint/Hard-decline/grounding/scorecard), tests/test_wave_a_probe.py (diagnostic prints, always passes; run with `-n 0 -s` to see LLM replies — pytest.ini enables xdist which swallows prints). Known-failing (real defects, not flakes; each reproduced 2+ times): test_named_grounded_cases_have_verbatim_prompt[fms-retail-chain], test_crisp_ask_has_no_coaching_line, test_easy_case_gives_structural_hint_when_stuck. PASSING and stable: Hard decline line is exact, orchard/biscuit verbatim prompts are delivered verbatim as the first interviewer message, SCORE_JSON parses and XP persists.",
+  "rca_of_the_issue": "Coaching-line over-application: FUZZY_MATCHING_RULE is stated as 'very important' with an affirmative template and only one negative clause ('Do NOT use this coaching line when the phrasing is already crisp') with no definition or example of 'crisp', so gpt-5.4-mini treats the template as the default reveal format. Retail Chain fallback: the verbatim-prompt heuristic requires a whitelisted prefix AND terminal '.'/'?' on a single extracted line; p.135's prompt starts with 'A chain of' (not whitelisted) and several other prompts wrap across lines, so 61/95 cases fall back and one (Home Insurance) matches a later transcript line instead."
+}
