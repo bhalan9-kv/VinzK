@@ -29,19 +29,28 @@ Build a professional AI case interviewer for one case session at a time. Six cas
 - 2026-08-26: New backend endpoints `GET /api/sessions` and `GET /api/sessions/{id}`.
 - 2026-08-26: Category-specific interviewer guidance per case type (profitability, GTM, market entry, DD/M&A, unconventional, guesstimate, revenues, cost reduction, growth, pricing, customer satisfaction).
 - 2026-08-26: Streak calculation + strongest-case-type stat on progress.
+- 2026-08-29: **Full rebuild — dark aesthetic UI overhaul.** Pitch black (#000) canvas with neon accents (cyan #00f0ff, magenta #ff2daa, purple, green, amber). Glass morphism cards, gradient text, noise texture, ambient glow orbs. Space Grotesk + Inter + JetBrains Mono fonts. Framer Motion page transitions.
+- 2026-08-29: **Timed interview mode.** Select timed/untimed before session starts. 5 preset time limits (10/15/20/25/30 min). Live countdown with color-coded urgency (green→yellow→red) and pulsing glow at danger. Auto-complete when time expires. Time bonus XP for early finish.
+- 2026-08-29: **95 cases seeded** across 11 types: profitability, market entry, GTM, DD/M&A, guesstimate, unconventional, revenues, cost reduction, growth, pricing, customer satisfaction.
+- 2026-08-29: Landing page redesigned — hero with ambient orbs, gradient headline, stat bar, feature cards with glow hover, CTA sections, footer.
+- 2026-08-29: Case library — grid layout with color-coded type/difficulty tags, bookmark stars, search, type & difficulty filters, All/Bookmarked tabs.
+- 2026-08-29: Interview page — pre-session mode picker (timed vs untimed), chat bubbles with AI indicator, typing animation, textarea with Enter-to-send.
+- 2026-08-29: Scorecard page — animated score bars, dimension breakdown, strengths/improvements feedback, time bonus display, XP earned.
+- 2026-08-29: Progress dashboard — XP total, sessions count, streak, avg score, strongest type, case type distribution bars, session history list.
 
 ## Prioritized backlog
 ### P1
-- Timed interview mode (countdown per session).
-- Richer exhibit rendering for tables / chart descriptions inside the interview.
+- Richer exhibit rendering for tables / chart descriptions inside the interview (currently exhibits are JSON in system prompt).
 - Verbatim casebook prompt + hidden answer key ingestion (deeper than titles + pages).
+- Visual scorecard charts (radar chart, bar comparisons).
 
 ### P2
-- Streaks + weekly practice targets with reminders.
-- Voice mode for interviewer.
-- Downloadable feedback summaries.
+- Voice mode for interviewer (Web Speech API).
+- Downloadable PDF feedback summaries.
+- Weekly streak targets with email reminders.
+- Case difficulty auto-adjustment based on performance.
 
 ## Next tasks
-1. Add timed interview mode.
+1. Add richer exhibit rendering inside the chat UI.
 2. Ingest verbatim casebook prompts + exhibit data.
-3. Weekly streaks + reminders.
+3. Add voice mode for the interviewer.

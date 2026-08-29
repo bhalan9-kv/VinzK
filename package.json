@@ -1,0 +1,14 @@
+{
+  "name": "caseflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "build": "cd frontend && npx react-scripts build",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "express": "^4.22.2"
+  }
+}

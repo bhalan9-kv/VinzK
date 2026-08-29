@@ -1,0 +1,1021 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "test@test.com",
+      "name": "Test User",
+      "password": "a19ab979b7e29cedd5bf86085dfaacbf:af21b6061acc0c92daec8026f6091210d973239810d03db894604543ecae73f276a1929d0668380ac9c6c6c59b739880c80798c24ea6d85cdc19262d90380892",
+      "xp": 0,
+      "streak": 1,
+      "lastActiveDate": "2026-08-29",
+      "createdAt": "2026-08-29T07:36:13.762Z"
+    },
+    {
+      "id": 2,
+      "email": "demo@case.com",
+      "name": "Demo User",
+      "password": "aa99680c978e9b798063d677b8b294b6:57ca0468318476a3db172abe2d3f63fbf790d328d2bc806e4bb23556707e74d8de16d14996986917e160c6c430bd9a2935dc478d100dae14910e591dde5d8194",
+      "xp": 0,
+      "streak": 1,
+      "lastActiveDate": "2026-08-29",
+      "createdAt": "2026-08-29T07:40:06.762Z"
+    },
+    {
+      "id": 3,
+      "email": "bhalan9@gmail.com",
+      "name": "Binit Halan",
+      "password": "11136c387a78eddbf74f407f815cadab:2950ad1d491ff49495cd8602c8118953fde8b2888f6b8f26441120a712866483df397e78160b3e30fef0fe199c2ac90d253a6d85bfe353ac7a3ac3a1e1a2649b",
+      "xp": 0,
+      "streak": 1,
+      "lastActiveDate": "2026-08-29",
+      "createdAt": "2026-08-29T07:46:08.417Z"
+    },
+    {
+      "id": 4,
+      "email": "terminator@test.com",
+      "name": "Terminator",
+      "password": "1135c1cb0330365ad335947463522259:2b8ea174571c73a77bcb59e589d0f401e7add46c880c1272433b8a6265989c318d7c3b23832b59e1192061bcce1ec20278fd62e0f299802582b1fdf677031420",
+      "xp": 0,
+      "streak": 0,
+      "lastActiveDate": null,
+      "createdAt": "2026-08-29T10:41:57.975Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": 1,
+      "userId": 2,
+      "caseId": 1,
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T07:40:06.803Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why. Take your time to think through each part carefully.\n\nBefore we begin, I want to understand your approach. Can you walk me through your initial framework for tackling this problem? Think about what areas you'd want to explore and how you'd structure your analysis.",
+          "timestamp": "2026-08-29T07:40:06.803Z"
+        }
+      ],
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "caseId": "1",
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T07:46:30.568Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why. Take your time to think through each part carefully.\n\nBefore we begin, I want to understand your approach. Can you walk me through your initial framework for tackling this problem? Think about what areas you'd want to explore and how you'd structure your analysis.",
+          "timestamp": "2026-08-29T07:46:30.568Z"
+        }
+      ],
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "caseId": "1",
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T07:49:10.555Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why. Take your time to think through each part carefully.\n\nBefore we begin, I want to understand your approach. Can you walk me through your initial framework for tackling this problem? Think about what areas you'd want to explore and how you'd structure your analysis.",
+          "timestamp": "2026-08-29T07:49:10.555Z"
+        },
+        {
+          "role": "user",
+          "content": "I am blank - I have no approach",
+          "timestamp": "2026-08-29T07:49:26.266Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Good framework. I can see you're thinking about the right areas. Let me push you a bit further:\n\n1. **Prioritization** — Of the areas you mentioned, which one would you investigate first and why?\n2. **Specificity** — Can you be more specific about what data points you'd look for within each area?\n\nWhen you're ready, I can share some data from the company. What specific information would be most helpful to start with?",
+          "timestamp": "2026-08-29T07:49:26.266Z"
+        }
+      ],
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "caseId": 1,
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "difficulty": "medium",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T08:12:45.256Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T08:12:45.256Z"
+        }
+      ],
+      "metadata": {
+        "phase": "clarifying",
+        "clarifyingRounds": 0,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "caseId": 1,
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "difficulty": "medium",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T08:13:09.758Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T08:13:09.758Z"
+        },
+        {
+          "role": "user",
+          "content": "I am blank - I have no approach",
+          "timestamp": "2026-08-29T08:13:09.760Z"
+        },
+        {
+          "role": "assistant",
+          "content": "It's okay to feel uncertain, but a consultant never starts without asking questions first. Let me help you.\n\nBefore proposing any framework, you need to understand the situation better. Ask me questions about:\n\n- **Company** — What's going on with the company? Revenue, costs, operations?\n- **Competitors** — Who are the competitors? How are they performing?\n- **Customers** — Who buys from them? Are customer behaviors changing?\n- **Context** — Any recent events, economic trends, or regulatory changes?\n- **Products** — Are there changes to the product lineup, pricing, or quality?\n\n**What questions do you have?** A good case interview starts with 3-5 clarifying questions.",
+          "timestamp": "2026-08-29T08:13:09.760Z"
+        }
+      ],
+      "metadata": {
+        "phase": "clarifying",
+        "clarifyingRounds": 1,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 6,
+      "userId": 2,
+      "caseId": 1,
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "difficulty": "easy",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T08:13:18.207Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why. I will guide you if you miss important questions.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T08:13:18.207Z"
+        },
+        {
+          "role": "user",
+          "content": "My framework is to look at revenue and costs, then analyze market trends and customer behavior.",
+          "timestamp": "2026-08-29T08:13:18.210Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Hold on — you jumped straight to a framework without asking any clarifying questions. In a real case interview, this would be a significant mistake.\n\nA good consultant always asks questions first to understand:\n- What exactly is the problem?\n- What's the context?\n- What data is available?\n\nYou skipped the clarifying phase entirely. I'm noting this as a **-15 point deduction** on your structure score.\n\nNow, since you've already started thinking about a framework — **please walk me through your proposed framework in detail.** What are the key areas you would analyze, and how would you structure your approach?",
+          "timestamp": "2026-08-29T08:13:18.210Z"
+        }
+      ],
+      "metadata": {
+        "phase": "framework",
+        "clarifyingRounds": 1,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0,
+        "frameworkPenalty": 15
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 7,
+      "userId": 2,
+      "caseId": 2,
+      "caseTitle": "AutoParts Global Margin Squeeze",
+      "caseType": "profitability",
+      "difficulty": "easy",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T08:13:18.212Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: AutoParts Global Margin Squeeze**\n**Company:** AutoParts Global\n\nAutoParts Global, a Tier-1 automotive supplier, has seen EBITDA margins fall from 14% to 8% over three years. Revenues grew 12%. I will guide you if you miss important questions.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T08:13:18.212Z"
+        },
+        {
+          "role": "user",
+          "content": "What are the company revenues? Who are the competitors? What products do they sell? How are customers behaving? What is the market context?",
+          "timestamp": "2026-08-29T08:13:18.215Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Good questions. You've covered 5 of the 5 key areas. \n\nNow, based on what you know — **walk me through your analytical framework.** How would you structure your approach to solve this problem?",
+          "timestamp": "2026-08-29T08:13:18.215Z"
+        }
+      ],
+      "metadata": {
+        "phase": "framework",
+        "clarifyingRounds": 1,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0,
+        "clarifyingScore": 100
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 8,
+      "userId": 3,
+      "caseId": "1",
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "difficulty": "easy",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T09:46:48.726Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why. I will guide you if you miss important questions.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T09:46:48.726Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T09:47:04.424Z"
+        },
+        {
+          "role": "assistant",
+          "content": "It's okay to feel uncertain, but a consultant never starts without asking questions first. Let me help you.\n\nBefore proposing any framework, you need to understand the situation better. Ask me questions about:\n\n- **Company** — What's going on with the company? Revenue, costs, operations?\n- **Competitors** — Who are the competitors? How are they performing?\n- **Customers** — Who buys from them? Are customer behaviors changing?\n- **Context** — Any recent events, economic trends, or regulatory changes?\n- **Products** — Are there changes to the product lineup, pricing, or quality?\n\n**What questions do you have?** A good case interview starts with 3-5 clarifying questions.",
+          "timestamp": "2026-08-29T09:47:04.426Z"
+        }
+      ],
+      "metadata": {
+        "phase": "clarifying",
+        "clarifyingRounds": 1,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 9,
+      "userId": 3,
+      "caseId": "11",
+      "caseTitle": "HealthCo Pharma Merger",
+      "caseType": "dd_ma",
+      "difficulty": "hard",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T09:47:23.500Z",
+      "completed": false,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: HealthCo Pharma Merger**\n**Company:** HealthCo\n\nHealthCo is merging with PharmaPlus in a $4.2B deal. Assess synergies. I will not give you hints if you miss something.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T09:47:23.500Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T09:47:28.097Z"
+        },
+        {
+          "role": "assistant",
+          "content": "It's okay to feel uncertain, but a consultant never starts without asking questions first. Let me help you.\n\nBefore proposing any framework, you need to understand the situation better. Ask me questions about:\n\n- **Company** — What's going on with the company? Revenue, costs, operations?\n- **Competitors** — Who are the competitors? How are they performing?\n- **Customers** — Who buys from them? Are customer behaviors changing?\n- **Context** — Any recent events, economic trends, or regulatory changes?\n- **Products** — Are there changes to the product lineup, pricing, or quality?\n\n**What questions do you have?** A good case interview starts with 3-5 clarifying questions.",
+          "timestamp": "2026-08-29T09:47:28.097Z"
+        }
+      ],
+      "metadata": {
+        "phase": "clarifying",
+        "clarifyingRounds": 1,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    },
+    {
+      "id": 10,
+      "userId": 4,
+      "caseId": 1,
+      "caseTitle": "Declining Profits at GreenGrocer",
+      "caseType": "profitability",
+      "difficulty": "medium",
+      "timed": false,
+      "timeLimitSeconds": null,
+      "timeRemainingSeconds": null,
+      "startedAt": "2026-08-29T10:41:57.977Z",
+      "completed": true,
+      "messages": [
+        {
+          "role": "assistant",
+          "content": "Welcome to your case interview. I'll be your interviewer today.\n\n**The Case: Declining Profits at GreenGrocer**\n**Company:** GreenGrocer Inc.\n\nGreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why.\n\nBefore we jump into any framework or analysis, I need you to ask me some clarifying questions first. A good consultant always gathers information before proposing a solution.\n\n**What questions do you have for me about this case?**\nThink about what you need to know about the company, its competitors, customers, market context, and products.",
+          "timestamp": "2026-08-29T10:41:57.977Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T10:41:57.979Z"
+        },
+        {
+          "role": "assistant",
+          "content": "It's okay to feel uncertain, but a consultant never starts without asking questions first. Let me help you.\n\nBefore proposing any framework, you need to understand the situation better. Ask me questions about:\n\n- **Company** — What's going on with the company? Revenue, costs, operations?\n- **Competitors** — Who are the competitors? How are they performing?\n- **Customers** — Who buys from them? Are customer behaviors changing?\n- **Context** — Any recent events, economic trends, or regulatory changes?\n- **Products** — Are there changes to the product lineup, pricing, or quality?\n\n**What questions do you have?** A good case interview starts with 3-5 clarifying questions.",
+          "timestamp": "2026-08-29T10:41:57.979Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T10:41:57.981Z"
+        },
+        {
+          "role": "assistant",
+          "content": "I notice you've given me blank or very brief responses multiple times now. In a real case interview, this would raise serious concerns.\n\nLet me be direct: **you need to engage with the case.** Here's what I need from you:\n\n- Ask me questions about the Company, Competitors, Customers, Context, or Products\n- OR propose a framework if you think you have enough information\n- Even a rough attempt is better than no attempt\n\nThis is your last chance to show me something. **What would you like to ask or propose?**",
+          "timestamp": "2026-08-29T10:41:57.981Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T10:41:57.982Z"
+        },
+        {
+          "role": "assistant",
+          "content": "It's okay to feel uncertain, but a consultant never starts without asking questions first. Let me help you.\n\nBefore proposing any framework, you need to understand the situation better. Ask me questions about:\n\n- **Company** — What's going on with the company? Revenue, costs, operations?\n- **Competitors** — Who are the competitors? How are they performing?\n- **Customers** — Who buys from them? Are customer behaviors changing?\n- **Context** — Any recent events, economic trends, or regulatory changes?\n- **Products** — Are there changes to the product lineup, pricing, or quality?\n\n**What questions do you have?** A good case interview starts with 3-5 clarifying questions.",
+          "timestamp": "2026-08-29T10:41:57.982Z"
+        },
+        {
+          "role": "user",
+          "content": "i am blank",
+          "timestamp": "2026-08-29T10:41:57.983Z"
+        },
+        {
+          "role": "assistant",
+          "content": "I'm going to stop you here. After multiple attempts, I'm not seeing the level of analytical thinking required for this role.\n\n**Here's what went wrong:**\n- You were unable to formulate clarifying questions when asked\n- You didn't propose a structured framework for analysis\n- Your responses have been too brief or off-topic to continue productively\n\n**This is what a real consulting interview would look like** — the interviewer has the discretion to end early if the candidate is clearly not meeting the bar. It's better to recognize this now than to waste both parties' time.\n\n**My advice:** Before your next practice session, review the basics:\n1. The 5 Cs — always start by asking about Company, Competitors, Customers, Context, Products\n2. Frameworks — practice building structured approaches (profitability, market entry, pricing)\n3. Hypothesis-driven thinking — always state what you believe and how you'd test it\n\nYou can end this session to see your scorecard, but I strongly recommend studying the fundamentals first.\n\nClick **End Session** to finish.",
+          "timestamp": "2026-08-29T10:41:57.983Z"
+        }
+      ],
+      "metadata": {
+        "phase": "terminated",
+        "clarifyingRounds": 2,
+        "frameworkEvaluated": false,
+        "frameworkScore": 0,
+        "consecutiveBlanks": 4,
+        "totalPoorResponses": 4,
+        "terminationWarnings": 3,
+        "terminatedEarly": true,
+        "terminationReason": "Candidate repeatedly unable to provide substantive responses"
+      },
+      "scorecard": null,
+      "xpEarned": 0
+    }
+  ],
+  "cases": [
+    {
+      "title": "Declining Profits at GreenGrocer",
+      "company": "GreenGrocer Inc.",
+      "type": "profitability",
+      "difficulty": "easy",
+      "context": "GreenGrocer, a mid-size organic grocery chain with 45 stores, has seen profits drop 15% over the past year despite flat revenues. The CEO wants to understand why.",
+      "exhibits": [
+        {
+          "title": "Revenue & Cost Breakdown",
+          "data": {
+            "revenues_2025": "$1.2B",
+            "revenues_2024": "$1.21B",
+            "cogs": {
+              "2024": "$750M",
+              "2025": "$780M"
+            },
+            "opex": {
+              "2024": "$290M",
+              "2025": "$310M"
+            },
+            "net_income": {
+              "2024": "$170M",
+              "2025": "$110M"
+            }
+          }
+        },
+        {
+          "title": "Store Performance",
+          "data": {
+            "top_quartile_margin": "12%",
+            "bottom_quartile_margin": "-3%",
+            "new_stores": 8,
+            "lease_cost_increase": "18%"
+          }
+        }
+      ],
+      "id": 1
+    },
+    {
+      "title": "AutoParts Global Margin Squeeze",
+      "company": "AutoParts Global",
+      "type": "profitability",
+      "difficulty": "medium",
+      "context": "AutoParts Global, a Tier-1 automotive supplier, has seen EBITDA margins fall from 14% to 8% over three years. Revenues grew 12%.",
+      "exhibits": [
+        {
+          "title": "Segment P&L",
+          "data": {
+            "OEM": {
+              "revenue": "$4.2B",
+              "margin": "6%"
+            },
+            "aftermarket": {
+              "revenue": "$1.8B",
+              "margin": "15%"
+            },
+            "raw_materials_inflation": "22%",
+            "labor_cost_increase": "15%"
+          }
+        }
+      ],
+      "id": 2
+    },
+    {
+      "title": "NovaTech SaaS Profitability Crisis",
+      "company": "NovaTech",
+      "type": "profitability",
+      "difficulty": "medium",
+      "context": "NovaTech is a B2B SaaS company with $200M ARR. Despite 40% YoY revenue growth, they are burning $80M/year. The board wants a path to profitability.",
+      "exhibits": [
+        {
+          "title": "Unit Economics",
+          "data": {
+            "CAC": "$45,000",
+            "LTV": "$120,000",
+            "payback_months": 18,
+            "gross_margin": "72%",
+            "net_revenue_retention": "110%",
+            "logo_churn": "8%"
+          }
+        }
+      ],
+      "id": 3
+    },
+    {
+      "title": "CloudPay Enters India",
+      "company": "CloudPay",
+      "type": "market_entry",
+      "difficulty": "medium",
+      "context": "CloudPay, a US payroll SaaS company, wants to enter the Indian market where 60M+ SMEs need digital payroll solutions.",
+      "exhibits": [
+        {
+          "title": "Market Data",
+          "data": {
+            "india_smes": "63M",
+            "digital_penetration": "12%",
+            "tam": "$4.2B",
+            "competitors": 8,
+            "top_competitor_share": "35%"
+          }
+        }
+      ],
+      "id": 4
+    },
+    {
+      "title": "EcoWear Launches in Japan",
+      "company": "EcoWear",
+      "type": "market_entry",
+      "difficulty": "hard",
+      "context": "EcoWear, a sustainable fashion brand from Scandinavia, wants to enter the Japanese market.",
+      "exhibits": [
+        {
+          "title": "Japan Market",
+          "data": {
+            "market_size": "$85B",
+            "sustainable_share": "4%",
+            "growth_rate": "18%",
+            "channels": {
+              "department_stores": "40%",
+              "online": "30%",
+              "boutiques": "20%"
+            }
+          }
+        }
+      ],
+      "id": 5
+    },
+    {
+      "title": "FitTech Enters Brazil",
+      "company": "FitTech",
+      "type": "market_entry",
+      "difficulty": "medium",
+      "context": "FitTech, a fitness app with 5M US users, wants to expand to Brazil.",
+      "exhibits": [
+        {
+          "title": "Brazil Market",
+          "data": {
+            "market_size": "$5.8B",
+            "smartphone_penetration": "82%",
+            "willingness_to_pay": "$4.50/mo vs $15 US"
+          }
+        }
+      ],
+      "id": 6
+    },
+    {
+      "title": "NeoCRM Go-to-Market",
+      "company": "NeoCRM",
+      "type": "gtm",
+      "difficulty": "medium",
+      "context": "NeoCRM launched a new AI-powered CRM but is struggling to find product-market fit. 200 paying customers out of 5,000 trials.",
+      "exhibits": [
+        {
+          "title": "Funnel Metrics",
+          "data": {
+            "trials": 5000,
+            "activated": 3200,
+            "paid": 200,
+            "conversion": "4%",
+            "industry_avg": "15%",
+            "nps": 22
+          }
+        }
+      ],
+      "id": 7
+    },
+    {
+      "title": "Artisan Marketplace Launch",
+      "company": "ArtisanHub",
+      "type": "gtm",
+      "difficulty": "easy",
+      "context": "ArtisanHub is a marketplace connecting artisans with buyers. 500 sellers but only 200 monthly buyers.",
+      "exhibits": [
+        {
+          "title": "Marketplace Metrics",
+          "data": {
+            "sellers": 500,
+            "monthly_buyers": 200,
+            "avg_order": "$45",
+            "seller_retention": "40%",
+            "buyer_retention": "15%"
+          }
+        }
+      ],
+      "id": 8
+    },
+    {
+      "title": "PaySimple Enterprise Push",
+      "company": "PaySimple",
+      "type": "gtm",
+      "difficulty": "hard",
+      "context": "PaySimple, a SMB payment processor, wants to move upmarket to enterprise clients.",
+      "exhibits": [
+        {
+          "title": "Current vs Target",
+          "data": {
+            "current_customers": "15K SMBs",
+            "avg_contract": "$5K/yr",
+            "enterprise_deals": 2,
+            "win_rate": "4%"
+          }
+        }
+      ],
+      "id": 9
+    },
+    {
+      "title": "MegaCorp Acquires TechStart",
+      "company": "MegaCorp",
+      "type": "dd_ma",
+      "difficulty": "medium",
+      "context": "MegaCorp, a Fortune 500 conglomerate, is considering acquiring TechStart, a Series C AI startup, for $800M.",
+      "exhibits": [
+        {
+          "title": "Target Financials",
+          "data": {
+            "arr": "$60M",
+            "growth": "120%",
+            "gross_margin": "78%",
+            "employees": 340
+          }
+        }
+      ],
+      "id": 10
+    },
+    {
+      "title": "HealthCo Pharma Merger",
+      "company": "HealthCo",
+      "type": "dd_ma",
+      "difficulty": "hard",
+      "context": "HealthCo is merging with PharmaPlus in a $4.2B deal. Assess synergies.",
+      "exhibits": [
+        {
+          "title": "Synergy Analysis",
+          "data": {
+            "revenue_synergies": "$280M/yr",
+            "cost_synergies": "$600M/yr",
+            "integration_cost": "$800M"
+          }
+        }
+      ],
+      "id": 11
+    },
+    {
+      "title": "How Many Gas Stations in the US?",
+      "company": "N/A",
+      "type": "guesstimate",
+      "difficulty": "easy",
+      "context": "Estimate the total number of gas stations in the United States.",
+      "exhibits": [],
+      "id": 12
+    },
+    {
+      "title": "Market Size for E-Scooter Charging",
+      "company": "N/A",
+      "type": "guesstimate",
+      "difficulty": "medium",
+      "context": "Estimate the total addressable market for e-scooter charging infrastructure in a major US city.",
+      "exhibits": [],
+      "id": 13
+    },
+    {
+      "title": "Should Amazon Open Restaurants?",
+      "company": "Amazon",
+      "type": "unconventional",
+      "difficulty": "hard",
+      "context": "Should Amazon acquire or build a chain of physical fast-casual restaurants?",
+      "exhibits": [
+        {
+          "title": "Strategic Analysis",
+          "data": {
+            "fcas_market": "$250B",
+            "prime_members": "200M",
+            "restaurant_margins": "3-6%"
+          }
+        }
+      ],
+      "id": 14
+    },
+    {
+      "title": "Revenue Growth at DataPulse",
+      "company": "DataPulse",
+      "type": "revenues",
+      "difficulty": "medium",
+      "context": "DataPulse, a data analytics consultancy, wants to grow revenue from $25M to $50M in 3 years.",
+      "exhibits": [
+        {
+          "title": "Revenue Analysis",
+          "data": {
+            "current": "$25M",
+            "project_work": "60%",
+            "retainer": "25%",
+            "training": "15%",
+            "win_rate": "22%"
+          }
+        }
+      ],
+      "id": 15
+    },
+    {
+      "title": "Cost Reduction at FactoryCo",
+      "company": "FactoryCo",
+      "type": "cost_reduction",
+      "difficulty": "medium",
+      "context": "FactoryCo needs to reduce operating costs by 20% to remain competitive.",
+      "exhibits": [
+        {
+          "title": "Cost Breakdown",
+          "data": {
+            "labor": "35%",
+            "materials": "30%",
+            "energy": "15%",
+            "maintenance": "10%",
+            "automation": "Low"
+          }
+        }
+      ],
+      "id": 16
+    },
+    {
+      "title": "Growth Strategy for HealthTech",
+      "company": "HealthTech Pro",
+      "type": "growth",
+      "difficulty": "hard",
+      "context": "HealthTech Pro is growing 20% YoY but the board wants 40%.",
+      "exhibits": [
+        {
+          "title": "Growth Analysis",
+          "data": {
+            "arr": "$40M",
+            "current_growth": "20%",
+            "target": "40%",
+            "penetration": "4%"
+          }
+        }
+      ],
+      "id": 17
+    },
+    {
+      "title": "Pricing Strategy for DevTool",
+      "company": "DevTool Inc.",
+      "type": "pricing",
+      "difficulty": "medium",
+      "context": "DevTool is a developer productivity tool with 50K users. Current pricing: $0 / $29/mo. Revenue below potential.",
+      "exhibits": [
+        {
+          "title": "Pricing Analysis",
+          "data": {
+            "free_users": 48000,
+            "pro_users": 2000,
+            "conversion": "4%",
+            "willingness_29": "35%",
+            "willingness_49": "22%"
+          }
+        }
+      ],
+      "id": 18
+    },
+    {
+      "title": "Reducing Churn at StreamCo",
+      "company": "StreamCo",
+      "type": "customer_satisfaction",
+      "difficulty": "medium",
+      "context": "StreamCo has 8% monthly churn — double the industry average.",
+      "exhibits": [
+        {
+          "title": "Churn Analysis",
+          "data": {
+            "monthly_churn": "8%",
+            "industry_avg": "4%",
+            "churn_month_1": "20%",
+            "top_reason": "not using advanced features (35%)"
+          }
+        }
+      ],
+      "id": 19
+    },
+    {
+      "title": "LuxAir Fleet Costs",
+      "company": "LuxAir",
+      "type": "profitability",
+      "difficulty": "hard",
+      "context": "LuxAir, a luxury regional airline, has fuel costs consuming 35% of revenue (industry avg: 25%).",
+      "exhibits": [
+        {
+          "title": "Cost Benchmarks",
+          "data": {
+            "fuel_pct": "35%",
+            "industry_avg": "25%",
+            "fleet_age": "14 years",
+            "load_factor": "71%"
+          }
+        }
+      ],
+      "id": 20
+    },
+    {
+      "title": "SwiftLogistics to Southeast Asia",
+      "company": "SwiftLogistics",
+      "type": "market_entry",
+      "difficulty": "hard",
+      "context": "SwiftLogistics wants to enter Southeast Asia starting with Indonesia.",
+      "exhibits": [
+        {
+          "title": "Indonesia",
+          "data": {
+            "population": "280M",
+            "ecom_growth": "30%",
+            "cod_pct": "65%",
+            "avg_delivery": "5-7 days"
+          }
+        }
+      ],
+      "id": 21
+    },
+    {
+      "title": "LearnFast B2B Expansion",
+      "company": "LearnFast",
+      "type": "gtm",
+      "difficulty": "medium",
+      "context": "LearnFast, a consumer learning app with 2M users, wants to launch a B2B corporate training product.",
+      "exhibits": [
+        {
+          "title": "B2B Opportunity",
+          "data": {
+            "market": "$380B",
+            "competitors": 25,
+            "price_per_learner": "$200/yr"
+          }
+        }
+      ],
+      "id": 22
+    },
+    {
+      "title": "RetailMax Store Acquisition",
+      "company": "RetailMax",
+      "type": "dd_ma",
+      "difficulty": "easy",
+      "context": "RetailMax wants to acquire 15 underperforming stores from a bankrupt competitor for $25M.",
+      "exhibits": [
+        {
+          "title": "Target Stores",
+          "data": {
+            "stores": 15,
+            "avg_revenue": "$4.2M",
+            "lease_remaining": "5 years",
+            "remodel_cost": "$500K/store"
+          }
+        }
+      ],
+      "id": 23
+    },
+    {
+      "title": "MedTech Clinical Sales",
+      "company": "MedTech Solutions",
+      "type": "gtm",
+      "difficulty": "hard",
+      "context": "MedTech has a diagnostic device that reduces lab results time by 60%. They struggle to sell to hospitals.",
+      "exhibits": [
+        {
+          "title": "Sales Pipeline",
+          "data": {
+            "hospitals_targeted": 5200,
+            "demos": 120,
+            "pilots": 35,
+            "converted": 5,
+            "price": "$85K"
+          }
+        }
+      ],
+      "id": 24
+    },
+    {
+      "title": "DigitalVoice Advertising Acquisition",
+      "company": "MediaGroup",
+      "type": "dd_ma",
+      "difficulty": "medium",
+      "context": "MediaGroup is acquiring DigitalVoice, a programmatic advertising company, for $350M.",
+      "exhibits": [
+        {
+          "title": "DigitalVoice",
+          "data": {
+            "revenue": "$120M",
+            "growth": "35%",
+            "top3_concentration": "45%",
+            "data_profiles": "300M"
+          }
+        }
+      ],
+      "id": 25
+    },
+    {
+      "title": "AeroParts Manufacturing",
+      "company": "AeroParts Manufacturing",
+      "type": "profitability",
+      "difficulty": "hard",
+      "context": "AeroParts makes precision aerospace components. Revenues are flat but scrap rates have doubled.",
+      "exhibits": [
+        {
+          "title": "Quality Data",
+          "data": {
+            "scrap_rate": "8% (was 4%)",
+            "rework_cost": "$2.2M/quarter",
+            "machine_age": "18 years",
+            "penalties": "$4.5M"
+          }
+        }
+      ],
+      "id": 26
+    },
+    {
+      "title": "GameVault Influencer Strategy",
+      "company": "GameVault",
+      "type": "gtm",
+      "difficulty": "easy",
+      "context": "GameVault wants to use influencer marketing as its primary growth channel.",
+      "exhibits": [
+        {
+          "title": "Influencer Market",
+          "data": {
+            "creators": "12M",
+            "micro_rate": "$500/post",
+            "macro_rate": "$8K/post",
+            "target_installs": "500K in 6mo"
+          }
+        }
+      ],
+      "id": 27
+    },
+    {
+      "title": "GreenPower Utility Acquisition",
+      "company": "GreenPower",
+      "type": "dd_ma",
+      "difficulty": "medium",
+      "context": "GreenPower is acquiring SolarField, a solar farm operator, for $600M.",
+      "exhibits": [
+        {
+          "title": "SolarField Assets",
+          "data": {
+            "capacity_mw": 450,
+            "farms": 12,
+            "avg_ppa": "$42/mwh",
+            "levelized_cost": "$35/mwh"
+          }
+        }
+      ],
+      "id": 28
+    },
+    {
+      "title": "Number of ATMs in India",
+      "company": "N/A",
+      "type": "guesstimate",
+      "difficulty": "medium",
+      "context": "Estimate the total number of ATMs operating in India.",
+      "exhibits": [],
+      "id": 29
+    },
+    {
+      "title": "Times Square Billboard Revenue",
+      "company": "N/A",
+      "type": "guesstimate",
+      "difficulty": "medium",
+      "context": "Estimate the annual revenue of a prime billboard location in Times Square.",
+      "exhibits": [],
+      "id": 30
+    },
+    {
+      "title": "AI Therapist vs Human",
+      "company": "MindBridge",
+      "type": "unconventional",
+      "difficulty": "hard",
+      "context": "MindBridge wants to launch an AI-powered therapy platform that is 90% cheaper than human therapists.",
+      "exhibits": [
+        {
+          "title": "Therapy Market",
+          "data": {
+            "market": "$15B",
+            "avg_session": "$150",
+            "shortage": "30%",
+            "ai_cost": "$15/session",
+            "effectiveness": "65% as effective as CBT"
+          }
+        }
+      ],
+      "id": 31
+    },
+    {
+      "title": "US Wedding Industry",
+      "company": "N/A",
+      "type": "guesstimate",
+      "difficulty": "medium",
+      "context": "Estimate the total annual market size of the US wedding industry.",
+      "exhibits": [],
+      "id": 32
+    },
+    {
+      "title": "Dog Walking App Market",
+      "company": "PawWalk",
+      "type": "guesstimate",
+      "difficulty": "medium",
+      "context": "Estimate the annual market size for a dog walking app in the United States.",
+      "exhibits": [],
+      "id": 33
+    }
+  ],
+  "bookmarks": [],
+  "nextUserId": 5,
+  "nextSessionId": 11,
+  "nextCaseId": 34
+}
